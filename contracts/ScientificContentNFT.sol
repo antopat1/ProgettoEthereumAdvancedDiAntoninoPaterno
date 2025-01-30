@@ -2,17 +2,16 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
+import "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 import "./ScientificContentRegistry.sol";
 
-contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2, Ownable {
+contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
     using Strings for uint256;
 
-    VRFCoordinatorV2Interface private immutable COORDINATOR;
+    IVRFCoordinatorV2Plus private immutable COORDINATOR;
     bytes32 private immutable keyHash;
-    uint64 private immutable subscriptionId;
+    uint256 private immutable subscriptionId;
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant CALLBACK_GAS_LIMIT = 300000;
     uint32 private constant NUM_WORDS = 1;
@@ -52,10 +51,10 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2, Ownable {
         address _contentRegistry,
         address _vrfCoordinator,
         bytes32 _keyHash,
-        uint64 _subscriptionId
+        uint256 _subscriptionId
     ) 
         ERC721("DnA Scientific Content", "DNASCI")
-        VRFConsumerBaseV2(_vrfCoordinator)
+        VRFConsumerBaseV2Plus(_vrfCoordinator)
     {
         require(_contentRegistry != address(0), "Invalid registry address");
         require(_vrfCoordinator != address(0), "Invalid VRF coordinator");
@@ -63,10 +62,9 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2, Ownable {
         require(_subscriptionId != 0, "Invalid subscription ID");
         
         contentRegistry = ScientificContentRegistry(_contentRegistry);
-        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
+        COORDINATOR = IVRFCoordinatorV2Plus(_vrfCoordinator);
         keyHash = _keyHash;
         subscriptionId = _subscriptionId;
-        _transferOwnership(msg.sender);
     }
 
     function mintNFT(uint256 contentId) external payable {
@@ -78,14 +76,16 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2, Ownable {
         require(content.isAvailable, "Content not available");
         require(content.mintedCopies < content.maxCopies, "No copies available");
 
-        uint256 requestId = COORDINATOR.requestRandomWords(
-            keyHash,
-            subscriptionId,
-            REQUEST_CONFIRMATIONS,
-            CALLBACK_GAS_LIMIT,
-            NUM_WORDS
-        );
+        VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient.RandomWordsRequest({
+            keyHash: keyHash,
+            subId: subscriptionId,
+            requestConfirmations: REQUEST_CONFIRMATIONS,
+            callbackGasLimit: CALLBACK_GAS_LIMIT,
+            numWords: NUM_WORDS,
+            extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: false}))
+        });
 
+        uint256 requestId = COORDINATOR.requestRandomWords(request);
         _pendingMints[requestId] = PendingMint({
             minter: msg.sender,
             contentId: contentId
@@ -101,7 +101,7 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2, Ownable {
 
     function fulfillRandomWords(
         uint256 requestId,
-        uint256[] memory randomWords
+        uint256[] calldata randomWords
     ) internal override {
         PendingMint memory mintData = _pendingMints[requestId];
         

@@ -13,6 +13,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrumSepolia } from "viem/chains";
 import { Account } from "viem";
+import { IVRFCoordinatorV2Plus } from "../typechain-types";
 dotenv.config();
 
 interface NetworkConfig {
@@ -46,23 +47,6 @@ interface DeploymentResult {
   publicClient: PublicClient;
 }
 
-function getUserConfirmation(): Promise<boolean> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise((resolve) => {
-    rl.question(
-      "\n🔍 Have you added the NFT Contract Address as a consumer in Chainlink VRF? (Type 'YES' to confirm): ",
-      (answer) => {
-        rl.close();
-        resolve(answer.trim().toUpperCase() === "YES");
-      }
-    );
-  });
-}
-
 async function getWalletClient(
   network: string
 ): Promise<{ walletClient: WalletClient; account: Account }> {
@@ -90,7 +74,6 @@ async function getWalletClient(
 async function getGasPrice(publicClient: PublicClient): Promise<bigint> {
   try {
     const gasPrice = await publicClient.getGasPrice();
-    // Aumenta il gas price del 20% per maggiore sicurezza
     return (gasPrice * 120n) / 100n;
   } catch (error) {
     console.warn("Failed to get gas price, using default");
@@ -109,9 +92,8 @@ async function estimateGas(
     const gasEstimate = await publicClient.estimateGas({
       account: account.address,
       data: bytecode as `0x${string}`,
-      value: 0n, // Se il contratto richiede un valore, modifica questo campo
+      value: 0n,
     });
-    // Aumenta la stima del gas del 30% per sicurezza
     return (gasEstimate * 130n) / 100n;
   } catch (error) {
     console.warn("Failed to estimate gas, using default");
@@ -155,8 +137,8 @@ async function deployContract(
       console.log(`⏳ Waiting for deployment transaction: ${hash}`);
       const receipt = await publicClient.waitForTransactionReceipt({ 
         hash,
-        timeout: 120_000, // 2 minuti di timeout
-        confirmations: 2, // aspetta 2 conferme
+        timeout: 120_000,
+        confirmations: 2,
       });
 
       if (!receipt.contractAddress) {
@@ -230,79 +212,53 @@ export async function deployContractsFixture(
       config.subscriptionId,
     ];
 
-    // For Arbitrum Sepolia, show NFT address and wait for confirmation
+    console.log("📝 Deploying ScientificContentNFT...");
+    const nft = await deployContract(
+      "ScientificContentNFT",
+      nftArgs,
+      network,
+      true
+    );
+
+    // Automatically add the NFT contract as a consumer to the VRF subscription
     if (network === "arbitrumSepolia") {
-      console.log("📝 Deploying ScientificContentNFT...");
-      const nft = await deployContract(
-        "ScientificContentNFT",
-        nftArgs,
-        network,
-        true
+      console.log("🔗 Adding NFT Contract as a consumer to Chainlink VRF Subscription...");
+      const vrfCoordinator = await hre.viem.getContractAt<IVRFCoordinatorV2Plus>(
+        "IVRFCoordinatorV2Plus",
+        config.vrfCoordinator
       );
 
-      const confirmed = await getUserConfirmation();
-      if (!confirmed) {
-        console.log(
-          "❌ Deployment halted. Please add the consumer address to Chainlink VRF."
-        );
-        process.exit(1);
-      }
+      const addConsumerTx = await vrfCoordinator.write.addConsumer([
+        config.subscriptionId,
+        nft.address,
+      ]);
 
-      // Set NFT contract in registry
-      console.log("🔗 Setting NFT Contract in Registry...");
-      const setNFTTx = await registry.write.setNFTContract([nft.address]);
-      await publicClient.waitForTransactionReceipt({ hash: setNFTTx });
-      console.log("✅ NFT Contract set in Registry");
-
-      console.log("\n✅ Deployment Summary");
-      console.log("=".repeat(50));
-      console.log(`📚 Registry Address: ${registry.address}`);
-      console.log(`🎨 NFT Contract Address: ${nft.address}`);
-      console.log(`👤 Owner Address: ${account.address}`);
-      console.log(`🔗 VRF Coordinator: ${config.vrfCoordinator}`);
-      console.log(`🔑 Key Hash: ${config.keyHash}`);
-      console.log(`📋 Subscription ID: ${config.subscriptionId}`);
-      console.log("=".repeat(50) + "\n");
-
-      return {
-        registry,
-        nft,
-        owner: walletClient,
-        publicClient,
-      };
-    } else {
-      // Local or mock deployment
-      const nft = await deployContract(
-        "ScientificContentNFT",
-        nftArgs,
-        network
-      );
-
-      // Set NFT contract in registry
-      console.log("🔗 Setting NFT Contract in Registry...");
-      const setNFTTx = await registry.write.setNFTContract([nft.address]);
-      await publicClient.waitForTransactionReceipt({ hash: setNFTTx });
-      console.log("✅ NFT Contract set in Registry");
-
-      console.log("\n✅ Deployment Summary");
-      console.log("=".repeat(50));
-      console.log(`📚 Registry Address: ${registry.address}`);
-      console.log(`🎨 NFT Contract Address: ${nft.address}`);
-      console.log(`👤 Owner Address: ${account.address}`);
-      console.log(
-        `🔗 VRF Coordinator: ${mockVRFAddress || config.vrfCoordinator}`
-      );
-      console.log(`🔑 Key Hash: ${config.keyHash}`);
-      console.log(`📋 Subscription ID: ${config.subscriptionId}`);
-      console.log("=".repeat(50) + "\n");
-
-      return {
-        registry,
-        nft,
-        owner: walletClient,
-        publicClient,
-      };
+      await publicClient.waitForTransactionReceipt({ hash: addConsumerTx });
+      console.log("✅ NFT Contract added as a consumer to Chainlink VRF Subscription");
     }
+
+    // Set NFT contract in registry
+    console.log("🔗 Setting NFT Contract in Registry...");
+    const setNFTTx = await registry.write.setNFTContract([nft.address]);
+    await publicClient.waitForTransactionReceipt({ hash: setNFTTx });
+    console.log("✅ NFT Contract set in Registry");
+
+    console.log("\n✅ Deployment Summary");
+    console.log("=".repeat(50));
+    console.log(`📚 Registry Address: ${registry.address}`);
+    console.log(`🎨 NFT Contract Address: ${nft.address}`);
+    console.log(`👤 Owner Address: ${account.address}`);
+    console.log(`🔗 VRF Coordinator: ${config.vrfCoordinator}`);
+    console.log(`🔑 Key Hash: ${config.keyHash}`);
+    console.log(`📋 Subscription ID: ${config.subscriptionId}`);
+    console.log("=".repeat(50) + "\n");
+
+    return {
+      registry,
+      nft,
+      owner: walletClient,
+      publicClient,
+    };
   } catch (error: any) {
     console.error("\n❌ Deployment failed:", error.message);
     console.error("🔍 Error details:", error);
