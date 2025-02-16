@@ -34,6 +34,7 @@ contract ScientificContentRegistry is Ownable {
     event ContentStatusChanged(uint256 indexed contentId, bool isAvailable);
     event CopyMinted(uint256 indexed contentId, uint256 currentCopies);
     event NFTContractSet(address indexed nftContract);
+    event DebugLog(string message, uint256 id, string data);
 
     constructor() {
         _transferOwnership(msg.sender);
@@ -80,15 +81,16 @@ contract ScientificContentRegistry is Ownable {
         _usedHashes[contentHash] = true;
 
         emit ContentRegistered(_contentCounter, msg.sender, title, contentHash, maxCopies);
+        emit DebugLog("Content registered", _contentCounter, title);
         return _contentCounter;
     }
 
     function getContent(uint256 contentId) 
         external 
-        view 
-        returns (Content memory) 
+        returns (Content memory)  // Rimossa la dichiarazione `view`
     {
-        require(_contentExists(contentId), "Content does not exist");
+        require(contentExists(contentId), "Content does not exist");
+        emit DebugLog("Content accessed", contentId, _contents[contentId].title);
         return _contents[contentId];
     }
 
@@ -97,13 +99,14 @@ contract ScientificContentRegistry is Ownable {
         onlyNFTContract 
         returns (bool) 
     {
-        require(_contentExists(contentId), "Content does not exist");
+        require(contentExists(contentId), "Content does not exist");
         
         Content storage content = _contents[contentId];
         require(content.mintedCopies < content.maxCopies, "Max copies reached");
         
         content.mintedCopies++;
         emit CopyMinted(contentId, content.mintedCopies);
+        emit DebugLog("Copy minted", contentId, content.title);
         
         if (content.mintedCopies >= content.maxCopies) {
             content.isAvailable = false;
@@ -117,20 +120,21 @@ contract ScientificContentRegistry is Ownable {
         external 
         onlyNFTContract
     {
-        require(_contentExists(contentId), "Content does not exist");
+        require(contentExists(contentId), "Content does not exist");
         Content storage content = _contents[contentId];
         require(content.mintedCopies < content.maxCopies, "Max copies reached");
         
         content.isAvailable = isAvailable;
         emit ContentStatusChanged(contentId, isAvailable);
+        emit DebugLog("Content availability changed", contentId, isAvailable ? "Available" : "Unavailable");
     }
 
-    function _contentExists(uint256 contentId) internal view returns (bool) {
+    function contentExists(uint256 contentId) public view returns (bool) {
         return contentId > 0 && contentId <= _contentCounter;
     }
 
     function getAvailableCopies(uint256 contentId) external view returns (uint256) {
-        require(_contentExists(contentId), "Content does not exist");
+        require(contentExists(contentId), "Content does not exist");
         Content memory content = _contents[contentId];
         return content.maxCopies - content.mintedCopies;
     }

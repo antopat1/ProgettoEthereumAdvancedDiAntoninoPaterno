@@ -1,6 +1,6 @@
 import hre from "hardhat";
 import dotenv from "dotenv";
-// import readline from "readline";
+import readline from "readline";
 import {
   formatEther,
   Address,
@@ -13,7 +13,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrumSepolia } from "viem/chains";
 import { Account } from "viem";
-// import { IVRFCoordinatorV2Plus } from "../typechain-types";
+import { IVRFCoordinatorV2Plus } from "../typechain-types";
 dotenv.config();
 
 interface NetworkConfig {

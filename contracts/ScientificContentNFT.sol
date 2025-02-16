@@ -46,6 +46,11 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
         uint256 copyNumber
     );
     event MintingFailed(address indexed minter, uint256 indexed contentId);
+    event DebugLog(string message, uint256 id, string data);
+
+    event MintStarted(uint256 indexed contentId, address indexed minter);
+    event RandomnessRequested(uint256 indexed requestId, uint256 indexed contentId);
+    event RandomnessReceived(uint256 indexed requestId, uint256 randomWord);
 
     constructor(
         address _contentRegistry,
@@ -76,6 +81,8 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
         require(content.isAvailable, "Content not available");
         require(content.mintedCopies < content.maxCopies, "No copies available");
 
+        emit DebugLog("Content found", contentId, content.title);
+
         VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient.RandomWordsRequest({
             keyHash: keyHash,
             subId: subscriptionId,
@@ -90,6 +97,8 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
             minter: msg.sender,
             contentId: contentId
         });
+
+        emit DebugLog("Random number requested", requestId, contentId.toString());
 
         uint256 authorRoyalty = (msg.value * AUTHOR_ROYALTY_PERCENTAGE) / 100;
         payable(content.author).transfer(authorRoyalty);
@@ -118,6 +127,7 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
         }
         
         delete _pendingMints[requestId];
+        emit DebugLog("Random number received", requestId, randomWords[0].toString());
     }
 
     function _processMint(
