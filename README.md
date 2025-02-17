@@ -94,7 +94,7 @@ npx hardhat test
 
 - **RoyaltyTests & RegisterContentTests:**: Verifica che le royalty vengano correttamente calcolate e trasferite all'autore e che i contenuti siano registrati e accessibili.
 
-- **MintingTests & RandomnessTests**: Verifica il processo di minting degli NFT e della generazione di numeri casuali tramite VRF.
+- **MintingTests & RandomnessTests**: Verifica il conio NFT con metadati corretti, e impedire conio si raggiunge il Max numero di copie impostato
 
 - **SpecialContentTests & TokenTransferTest**: Verifica che il contenuto speciale venga assegnato con una probabilità del 10% e che il trasferimento NFT sia effettuabile
 
