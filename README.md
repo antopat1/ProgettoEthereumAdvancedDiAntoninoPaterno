@@ -33,14 +33,11 @@ Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NF
 1. **Node.js**: Assicurati di avere Node.js installato. Puoi scaricarlo da [qui](https://nodejs.org/).
 2. **Git**: Clona la repository per iniziare.
 
-### Installazione
-
-1. Clona la repository:
-
-   ```bash
+```bash
    git clone https://github.com/antopat1/ProgettoEthereumAdvancedDiAntoninoPaterno.git
    cd ProgettoEthereumAdvancedDiAntoninoPaterno
    ```
+   
 
 ### Installa le dipendenze:
 ```bash
