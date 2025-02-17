@@ -42,10 +42,9 @@ Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NF
    cd ProgettoEthereumAdvancedDiAntoninoPaterno
    ```
 
- 2. Installa le dipendenze:  
-
-    ```bash
-   npm install
-   ```
+### Installa le dipendenze:
+```bash
+npm install
+```
 
    Nota: Questo comando installerà automaticamente tutte le dipendenze elencate nel file package.json, inclusi Hardhat, Viem, Chainlink e OpenZeppelin.
