@@ -35,7 +35,7 @@ The **Decentralized News & Articles (DnA)** project is a system that integrates 
 ```bash
 git clone https://github.com/antopat1/ProgettoEthereumAdvancedDiAntoninoPaterno.git
 cd ProgettoEthereumAdvancedDiAntoninoPaterno
-
+```
 ### Install Dependencies:
 ```bash
 npm install
