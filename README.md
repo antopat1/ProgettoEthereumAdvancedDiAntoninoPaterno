@@ -45,3 +45,17 @@ npm install
 ```
 
    Nota: Questo comando installerà automaticamente tutte le dipendenze elencate nel file package.json, inclusi Hardhat, Viem, Chainlink e OpenZeppelin.
+
+
+### Configura il file .env:
+```bash
+PRIVATE_KEY="<La tua chiave privata>"
+CHAINLINK_VRF_COORDINATOR="<Indirizzo del coordinatore VRF>"
+CHAINLINK_SUBSCRIPTION_ID="<ID della sottoscrizione Chainlink>"
+CHAINLINK_KEY_HASH="<Key hash per Chainlink VRF>"
+ARBITRUM_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
+LOCAL_PRIVATE_KEY="<Chiave privata per test locali>"
+LOCAL_VRF_MOCK="<Indirizzo del mock VRF per test locali>"
+```
+
+   Nota: Per i test locali, puoi lasciare vuoti i campi relativi a Chainlink e utilizzare il mock VRF
