@@ -59,3 +59,27 @@ LOCAL_VRF_MOCK="<Indirizzo del mock VRF per test locali>"
 ```
 
    Nota: Per i test locali, puoi lasciare vuoti i campi relativi a Chainlink e utilizzare il mock VRF
+
+
+### Compilazione dei contratti:
+```bash
+npx hardhat compile
+```
+
+### Comandi utili:
+
+- **deploy in locale**
+```bash
+npx hardhat run scripts/deployWithMock.ts
+```
+
+- **deploy su Arbitrum Sepolia**
+```bash
+npx hardhat run scripts/deployContracts.ts --network arbitrumSepolia
+```
+
+- **Eseguire i test sviluppati**
+```bash
+npx hardhat test
+```
+
