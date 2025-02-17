@@ -1,7 +1,6 @@
 # Decentralized News & Articles (DnA)
 
 
-
 Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NFT, randomicità verificabile (tramite Chainlink VRF) e un registro decentralizzato per gestire contenuti scientifici in modo trasparente e sicuro. Gli autori possono registrare i propri contenuti, specificando titolo, descrizione e numero massimo di copie disponibili. Ogni contenuto viene associato a un hash unico per garantirne l'autenticità. Gli utenti possono poi mintare NFT rappresentativi di questi contenuti, con metadati unici e una probabilità del 10% di ottenere un contenuto speciale.
 
 ---
@@ -32,8 +31,7 @@ Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NF
 ### Prerequisiti
 
 1. **Node.js**: Assicurati di avere Node.js installato. Puoi scaricarlo da [qui](https://nodejs.org/).
-2. **Hardhat**: Installato automaticamente tramite `npm install`.
-3. **Git**: Clona la repository per iniziare.
+2. **Git**: Clona la repository per iniziare.
 
 ### Installazione
 
@@ -42,3 +40,7 @@ Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NF
    ```bash
    git clone https://github.com/antopat1/ProgettoEthereumAdvancedDiAntoninoPaterno.git
    cd ProgettoEthereumAdvancedDiAntoninoPaterno
+
+ 2. Installa le dipendenze:  
+    ```bash
+   npm install
