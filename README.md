@@ -82,4 +82,20 @@ npx hardhat run scripts/deployContracts.ts --network arbitrumSepolia
 ```bash
 npx hardhat test
 ```
+## 🛠 Test sviluppati
 
+- **DeploymentTests**: Verifica che i contratti vengano deployati correttamente e che le configurazioni iniziali siano impostate come previsto.
+
+- **VRFFunctionalityTests**: Verifica che il processo di minting degli NFT funzioni correttamente, inclusa la generazione di numeri casuali tramite VRF.
+
+- **SecurityAndAccessControlTests**: Verifica che solo gli utenti autorizzati possano eseguire determinate operazioni e che i pagamenti vengano gestiti correttamente.
+
+- **EdgeCaseTests**: Verifica il comportamento del sistema in situazioni limite, come pagamenti insufficienti o superamento del numero massimo di copie.
+
+- **RoyaltyTests & RegisterContentTests:**: Verifica che le royalty vengano correttamente calcolate e trasferite all'autore e che i contenuti siano registrati e accessibili.
+
+- **MintingTests & RandomnessTests**: Verifica il processo di minting degli NFT e della generazione di numeri casuali tramite VRF.
+
+- **SpecialContentTests & TokenTransferTest**: Verifica che il contenuto speciale venga assegnato con una probabilità del 10% e che il trasferimento NFT sia effettuabile
+
+---
