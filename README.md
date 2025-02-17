@@ -1,101 +1,98 @@
 # Decentralized News & Articles (DnA)
 
-
-Il progetto **Decentralized News & Articles (DnA)** è un sistema che integra NFT, randomicità verificabile (tramite Chainlink VRF) e un registro decentralizzato per gestire contenuti scientifici in modo trasparente e sicuro. Gli autori possono registrare i propri contenuti, specificando titolo, descrizione e numero massimo di copie disponibili. Ogni contenuto viene associato a un hash unico per garantirne l'autenticità. Gli utenti possono poi mintare NFT rappresentativi di questi contenuti, con metadati unici e una probabilità del 10% di ottenere un contenuto speciale.
-
----
-
-## 🛠 Tecnologie e Framework
-
-- **Smart Contract**: Sviluppati in Solidity, i contratti gestiscono la logica di registrazione, minting e distribuzione delle royalty.
-- **Hardhat**: Ambiente di sviluppo e testing per SmartContract, che ha permesso di eseguire test completi e simulare scenari complessi.
-- **Viem**: Libreria per interagire con la blockchain e testare le chiamate ai contratti, scelta per la sua efficienza e facilità d'uso nello sviluppo di script e test.
-- **Chainlink VRF**: Utilizzato per generare numeri casuali verificabili, essenziali per il meccanismo dei contenuti speciali.
-- **Mock VRF Coordinator**: Simulazione locale di Chainlink VRF per evitare dipendenze dalla rete.
-- **Chai + Mocha**: Framework di test per Solidity.
+The **Decentralized News & Articles (DnA)** project is a system that integrates NFTs, verifiable randomness (via Chainlink VRF), and a decentralized ledger to manage scientific content transparently and securely. Authors can register their content by specifying the title, description, and maximum number of available copies. Each content is associated with a unique hash to ensure authenticity. Users can then mint NFTs representing this content, with unique metadata and a 10% chance of obtaining special content.
 
 ---
 
-## 🛠 Funzionalità chiave
+## 🛠 Technologies and Frameworks
 
-- **Registro dei contenuti**: Gli autori registrano i contenuti nel `ScientificContentRegistry`, che ne memorizza i dettagli e garantisce l'autenticità tramite un hash unico.
-- **Minting degli NFT**: Gli utenti pagano per mintare un NFT. Il sistema richiede un numero casuale tramite Chainlink VRF per generare metadati unici, inclusa la possibilità di contenuti speciali.
-- **Royalty automatiche**: Il 3% del pagamento viene trasferito automaticamente all'autore come royalty, incentivando la creazione di contenuti di qualità.
-- **Edizioni limitate**: Ogni contenuto ha un numero massimo di copie, rendendo gli NFT più preziosi e collezionabili.
-- **Randomicità verificabile**: Chainlink VRF garantisce che la randomicità sia imparziale e verificabile, aggiungendo un elemento di sorpresa e valore.
+- **Smart Contract**: Developed in Solidity, the contracts handle the logic of registration, minting, and royalty distribution.
+- **Hardhat**: Development and testing environment for Smart Contracts, which allowed for comprehensive testing and simulation of complex scenarios.
+- **Viem**: Library for interacting with the blockchain and testing contract calls, chosen for its efficiency and ease of use in developing scripts and tests.
+- **Chainlink VRF**: Used to generate verifiable random numbers, essential for the special content mechanism.
+- **Mock VRF Coordinator**: Local simulation of Chainlink VRF to avoid dependencies on the network.
+- **Chai + Mocha**: Testing framework for Solidity.
 
 ---
 
-## 🚀 Come iniziare
+## 🛠 Key Features
 
-### Prerequisiti
+- **Content Registry**: Authors register content in the `ScientificContentRegistry`, which stores the details and ensures authenticity through a unique hash.
+- **NFT Minting**: Users pay to mint an NFT. The system requests a random number via Chainlink VRF to generate unique metadata, including the possibility of special content.
+- **Automatic Royalties**: 3% of the payment is automatically transferred to the author as royalties, incentivizing the creation of quality content.
+- **Limited Editions**: Each content has a maximum number of copies, making the NFTs more valuable and collectible.
+- **Verifiable Randomness**: Chainlink VRF ensures that randomness is unbiased and verifiable, adding an element of surprise and value.
 
-1. **Node.js**: Assicurati di avere Node.js installato. Puoi scaricarlo da [qui](https://nodejs.org/).
-2. **Git**: Clona la repository per iniziare.
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+1. **Node.js**: Ensure you have Node.js installed. You can download it from [here](https://nodejs.org/).
+2. **Git**: Clone the repository to get started.
 
 ```bash
-   git clone https://github.com/antopat1/ProgettoEthereumAdvancedDiAntoninoPaterno.git
-   cd ProgettoEthereumAdvancedDiAntoninoPaterno
-   ```
-   
+git clone https://github.com/antopat1/ProgettoEthereumAdvancedDiAntoninoPaterno.git
+cd ProgettoEthereumAdvancedDiAntoninoPaterno
 
-### Installa le dipendenze:
+### Install Dependencies:
 ```bash
 npm install
 ```
 
-   Nota: Questo comando installerà automaticamente tutte le dipendenze elencate nel file package.json, inclusi Hardhat, Viem, Chainlink e OpenZeppelin.
+   Note: This command will automatically install all dependencies listed in the package.json file, including Hardhat, Viem, Chainlink, and OpenZeppelin
 
 
-### Configura il file .env:
+### Configure the .env file:
 ```bash
-PRIVATE_KEY="<La tua chiave privata>"
-CHAINLINK_VRF_COORDINATOR="<Indirizzo del coordinatore VRF>"
-CHAINLINK_SUBSCRIPTION_ID="<ID della sottoscrizione Chainlink>"
-CHAINLINK_KEY_HASH="<Key hash per Chainlink VRF>"
+PRIVATE_KEY="<Your private key>"
+CHAINLINK_VRF_COORDINATOR="<VRF coordinator address>"
+CHAINLINK_SUBSCRIPTION_ID="<Chainlink subscription ID>"
+CHAINLINK_KEY_HASH="<Key hash for Chainlink VRF>"
 ARBITRUM_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
-LOCAL_PRIVATE_KEY="<Chiave privata per test locali>"
-LOCAL_VRF_MOCK="<Indirizzo del mock VRF per test locali>"
+LOCAL_PRIVATE_KEY="<Private key for local tests>"
+LOCAL_VRF_MOCK="<VRF mock address for local tests>"
 ```
 
-   Nota: Per i test locali, puoi lasciare vuoti i campi relativi a Chainlink e utilizzare il mock VRF
+   Note: For local tests, you can leave the Chainlink fields empty and use the VRF mock.
 
 
-### Compilazione dei contratti:
+### Compile Contracts:
 ```bash
 npx hardhat compile
 ```
 
-### Comandi utili:
+### Useful Commands:
 
-- **deploy in locale**
+- **Deploy locally**
 ```bash
 npx hardhat run scripts/deployWithMock.ts
 ```
 
-- **deploy su Arbitrum Sepolia**
+- **Deploy on Arbitrum Sepolia**
 ```bash
 npx hardhat run scripts/deployContracts.ts --network arbitrumSepolia
 ```
 
-- **Eseguire i test sviluppati**
+- **Run developed tests**
 ```bash
 npx hardhat test
 ```
-## 🛠 Test sviluppati
+## 🛠 Developed Tests
 
-- **DeploymentTests**: Verifica che i contratti vengano deployati correttamente e che le configurazioni iniziali siano impostate come previsto.
+- **DeploymentTests**: Verify that the contracts are deployed correctly and that the initial configurations are set as expected.
 
-- **VRFFunctionalityTests**: Verifica che il processo di minting degli NFT funzioni correttamente, inclusa la generazione di numeri casuali tramite VRF.
+- **VRFFunctionalityTests**: Verify that the NFT minting process works correctly, including the generation of random numbers via VRF.
 
-- **SecurityAndAccessControlTests**: Verifica che solo gli utenti autorizzati possano eseguire determinate operazioni e che i pagamenti vengano gestiti correttamente.
+- **SecurityAndAccessControlTests**: Verify that only authorized users can perform certain operations and that payments are handled correctly.
 
-- **EdgeCaseTests**: Verifica il comportamento del sistema in situazioni limite, come pagamenti insufficienti o superamento del numero massimo di copie.
+- **EdgeCaseTests**: Verify the system's behavior in edge cases, such as insufficient payments or exceeding the maximum number of copies.
 
-- **RoyaltyTests & RegisterContentTests:**: Verifica che le royalty vengano correttamente calcolate e trasferite all'autore e che i contenuti siano registrati e accessibili.
+- **RoyaltyTests & RegisterContentTests:**: Verify that royalties are correctly calculated and transferred to the author and that content is registered and accessible.
 
-- **MintingTests & RandomnessTests**: Verifica il conio NFT con metadati corretti, e impedire conio si raggiunge il Max numero di copie impostato
+- **MintingTests & RandomnessTests**: Verify NFT minting with correct metadata, and prevent minting if the maximum number of copies is reached.
 
-- **SpecialContentTests & TokenTransferTest**: Verifica che il contenuto speciale venga assegnato con una probabilità del 10% e che il trasferimento NFT sia effettuabile
+- **SpecialContentTests & TokenTransferTest**: Verify that special content is assigned with a 10% probability and that NFT transfer is possible.
 
 ---
