@@ -36,10 +36,6 @@ contract ScientificContentRegistry is Ownable {
     event NFTContractSet(address indexed nftContract);
     event DebugLog(string message, uint256 id, string data);
 
-    constructor() {
-        _transferOwnership(msg.sender);
-    }
-
     modifier onlyNFTContract() {
         require(msg.sender == nftContract, "Only NFT contract can modify");
         _;
@@ -87,10 +83,10 @@ contract ScientificContentRegistry is Ownable {
 
     function getContent(uint256 contentId) 
         external 
-        returns (Content memory)  // Rimossa la dichiarazione `view`
+        view
+        returns (Content memory) 
     {
         require(contentExists(contentId), "Content does not exist");
-        emit DebugLog("Content accessed", contentId, _contents[contentId].title);
         return _contents[contentId];
     }
 

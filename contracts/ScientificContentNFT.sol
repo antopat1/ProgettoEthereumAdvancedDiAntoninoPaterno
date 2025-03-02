@@ -30,7 +30,6 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
     }
 
     mapping(uint256 => NFTMetadata) private _nftMetadata;
-    mapping(uint256 => uint256) private _randomRequests;
     mapping(uint256 => PendingMint) private _pendingMints;
 
     struct PendingMint {
@@ -119,7 +118,7 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
             mintData.contentId,
             randomWords[0]
         ) {
-            contentRegistry.incrementMintedCopies(mintData.contentId);
+            // L'incremento delle copie mintate viene gestito all'interno di _processMint
         } catch {
             emit MintingFailed(mintData.minter, mintData.contentId);
             payable(mintData.minter).transfer(MINT_PRICE);
@@ -152,6 +151,9 @@ contract ScientificContentNFT is ERC721Enumerable, VRFConsumerBaseV2Plus {
             hasSpecialContent: hasSpecialContent,
             copyNumber: content.mintedCopies + 1
         });
+
+        // Incrementa il contatore delle copie mintate atomicamente con la creazione dell'NFT
+        contentRegistry.incrementMintedCopies(contentId);
 
         emit NFTMinted(
             newTokenId, 
